@@ -3,12 +3,11 @@
 import requests
 
 class Moves():
-	def __init__(self, client_id, client_secret, redirect_url, \
-				api_url = 'https://api.moves-app.com/oauth/v1/'):
-	self.client_id = client_id	   # Client ID, get this by creating an app
-	self.client_secret = client_secret # Client Secret, get this by creating an app
-	self.redirect_url = redirect_url  # Callback URL for getting an access token
-	self.api_url = api_url
+	def __init__(self, client_id, client_secret, redirect_url, api_url = 'https://api.moves-app.com/oauth/v1/'):
+		self.client_id = client_id	   # Client ID, get this by creating an app
+		self.client_secret = client_secret # Client Secret, get this by creating an app
+		self.redirect_url = redirect_url  # Callback URL for getting an access token
+		self.api_url = api_url
 
 	# Generate an request URL
 	def request_url(self):
@@ -31,7 +30,9 @@ class Moves():
 
 	# Base request
 	def get(self, token, endpoint):
-		token = '?access_token=' + token
+		connector = '?'
+		if '&' in endpoint: connector = '&'
+		token = connector + 'access_token=' + token
 		return requests.get(self.api_url + endpoint + token).json()
 
 	# /user/profile
@@ -56,8 +57,7 @@ class Moves():
 	# /user/activities/daily?from=<start>&to=<end>
 	# /user/places/daily?from=<start>&to=<end>
 	# /user/storyline/daily?from=<start>&to=<end>
-	def get_range(self, access_token, endpoint, start, end):
-		export = get(access_token, endpoint + '?from=' + start + '&to=' + end) 
-		return export
-
-
+	def get_range(self, access_token, endpoint, start, end, include_trackpoints=True):
+		trackpoints = ''
+		if include_trackpoints: trackpoints = '&trackPoints=true'
+		return self.get(access_token, endpoint + '?from=' + start + '&to=' + end + trackpoints)
