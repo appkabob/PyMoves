@@ -34,7 +34,11 @@ class Moves():
         connector = '?'
         if '&' in endpoint: connector = '&'
         token = connector + 'access_token=' + token
-        return requests.get(self.api_url + endpoint + token).json()
+        r = requests.get(self.api_url + endpoint + token)
+        if r.ok:
+            return r.json()
+        else:
+            raise IOError(r.json()['error'])
 
     # /user/profile
     def get_profile(self, token):
